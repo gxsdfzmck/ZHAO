@@ -1,0 +1,67 @@
+#
+reset 
+brick x 1000 y 500 z 500
+move volume 1 x 2500 y 2500 z 2500
+
+create vertex location position 2250 2750 2250
+create vertex location position 2250 2750 2750
+create vertex location position 2250 2250 2750 
+create vertex location position 2250 2250 2250
+create surface vertex 9 10 11 12 
+surface 7 copy move 500 0 0 0 
+webcut volume 1 with plane from surface 8
+webcut volume 4 with plane from surface 7
+delete surface 7 8
+imprint volume all
+merge volume all
+set overlap max gap 0.0005
+
+brick x 1000 y 500 z 500
+brick x 5000 y 5000 z 5000
+subtract 6 from 7 imprint 
+move body 7 x 2500 y 2500 z 2500
+set acisoption integer "check_level" 70
+set overlap max gap 0.0005
+imprint volume all
+merge volume all
+
+# set block
+block 1 add surface 9 19 # fracure  # mesh
+block 2 add volume 1 4 5
+block 3 add volume 8
+
+# mesh 
+volume 8 scheme tetmesh proximity layers off geometry approximation angle 15 geometric sizing on
+volume 8 tetmesh growth_factor 1
+trimesher surface gradation 1.3
+trimesher volume gradation 1.3
+volume 1 4 5 scheme tetmesh proximity layers off geometric sizing on
+volume 1 4 5 size auto factor 4
+#volume 8 size auto factor 10
+mesh volume all
+block 2 3 element type TETRA4
+block 1 element type TRISHELL3
+
+# set BC
+nodeset 1 add curve 43 28 51 # injection well
+nodeset 2 add curve 25 42 50 # production well
+
+sideset 1111 add surface 35 # top
+sideset 2222 add surface 36 # bottom
+sideset 3333 add surface 37 # left 
+sideset 4444 add surface 39 # right
+sideset 5555 add surface 40 # font 
+sideset 6666 add surface 38 # back
+
+nodeset 1111 add surface 35 # top
+nodeset 2222 add surface 36 # bottom
+nodeset 3333 add surface 37 # left 
+nodeset 4444 add surface 39 # right
+nodeset 5555 add surface 40 # font 
+nodeset 6666 add surface 38 # back
+
+# export mesh
+undo group begin
+set exodus netcdf4 off
+set large exodus file on
+export mesh "~/FALCON/ZHAO/fine/mesh_fine.e" overwrite
