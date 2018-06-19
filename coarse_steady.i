@@ -480,17 +480,17 @@
     fp = simple_fluid
     phase = 0
   [../]
-  [./energy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    block = 1
-    material_property = PorousFlow_fluid_phase_internal_energy_nodal
-  [../]
-  [./enthalpy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_fluid_phase_enthalpy_nodal
-  [../]
+ # [./energy_all]
+ #   type = PorousFlowJoiner
+ #   at_nodes = true
+ #   block = 1
+ #   material_property = PorousFlow_fluid_phase_internal_energy_nodal
+ # [../]
+ # [./enthalpy_all]
+ #   type = PorousFlowJoiner
+ #   at_nodes = true
+ #   material_property = PorousFlow_fluid_phase_enthalpy_nodal
+ # [../]
   [./thermal_conductivity_matrix]
     type = PorousFlowThermalConductivityIdeal
     dry_thermal_conductivity = '3.0 0 0 0 3.0 0 0 0 3.0'
@@ -501,71 +501,25 @@
     dry_thermal_conductivity = '1.0 0 0 0 1.0 0 0 0 1.0'
     block = 'fracture'
   [../]
-  [./dens_qp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_qp
-    at_nodes = false
-  [../]
-  [./dens_nodal_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_nodal
-    at_nodes = true
-  [../]
-  [./visc_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_viscosity_qp
-  [../]
-  [./visc_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_viscosity_nodal
-  [../]
-  [./poro_fracture]
-    type = PorousFlowPorosity
-    mechanical = true
-    thermal = true
-    fluid = true
-    porosity_zero = 0.1   # = a * phif
-    thermal_expansion_coeff = 0
-    solid_bulk = 2.30E10
-    strain_at_nearest_qp = true
-    block = 'fracture'
-  [../]
-  [./poro_matrix]
-    type = PorousFlowPorosity
-    porosity_zero = 0.01
-    mechanical = true
-    thermal = true
-    fluid = true
-    thermal_expansion_coeff = 1.0e-5
-    solid_bulk = 2.30E10
-    strain_at_nearest_qp = true
-    block = 'matrix1 matrix2'
-  [../]
-  [./poro_fracture_nodal]
-    type = PorousFlowPorosity
-    mechanical = true
-    thermal = true
-    fluid = true
-    at_nodes = true
-    porosity_zero = 0.1   # = a * phif
-    solid_bulk = 2.30E10
-    thermal_expansion_coeff = 0
-    strain_at_nearest_qp = true
-    block = 'fracture'
-  [../]
-  [./poro_matrix_nodal]
-    type = PorousFlowPorosity
-    mechanical = true
-    thermal = true
-    fluid = true
-    at_nodes = true
-    porosity_zero = 0.01
-    thermal_expansion_coeff = 1.0e-5
-    solid_bulk = 2.30E10
-    strain_at_nearest_qp = true
-    block = 'matrix1 matrix2'
-  [../]
+ # [./dens_qp_all]
+ #   type = PorousFlowJoiner
+ #   material_property = PorousFlow_fluid_phase_density_qp
+ #   at_nodes = false
+ # [../]
+ # [./dens_nodal_all]
+ #   type = PorousFlowJoiner
+ #   material_property = PorousFlow_fluid_phase_density_nodal
+ #   at_nodes = true
+ # [../]
+ # [./visc_all]
+ #   type = PorousFlowJoiner
+ #   material_property = PorousFlow_viscosity_qp
+ # [../]
+ # [./visc_all_nodal]
+ #   type = PorousFlowJoiner
+ #   at_nodes = true
+ #   material_property = PorousFlow_viscosity_nodal
+ # [../]
   [./diff1]
     type = PorousFlowDiffusivityConst
     diffusion_coeff = '1e-9'
@@ -576,6 +530,29 @@
     type = PorousFlowDiffusivityConst
     diffusion_coeff = '1e-9'
     tortuosity = 0.1
+    block = 'matrix1 matrix2'
+  [../]
+  ########## porosity ##############
+  [./poro_fracture]
+    type = PorousFlowPorosityConst
+    porosity = 0.1   # = a * phif
+    block = 'fracture'
+  [../]
+  [./poro_matrix]
+    type = PorousFlowPorosityConst
+    porosity = 0.01
+    block = 'matrix1 matrix2'
+  [../]
+  [./poro_fracture_nodal]
+    type = PorousFlowPorosityConst
+    at_nodes = true
+    porosity = 0.1   # = a * phif
+    block = 'fracture'
+  [../]
+  [./poro_matrix_nodal]
+    type = PorousFlowPorosityConst
+    at_nodes = true
+    porosity = 0.01
     block = 'matrix1 matrix2'
   [../]
   [./permeability_fracture]
@@ -592,20 +569,20 @@
     type = PorousFlowRelativePermeabilityConst
     phase = 0
   [../]
-  [./relp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_relative_permeability_qp
-  [../]
+#  [./relp_all]
+#    type = PorousFlowJoiner
+#    material_property = PorousFlow_relative_permeability_qp
+#  [../]
   [./relp_nodal]
     type = PorousFlowRelativePermeabilityConst
     at_nodes = true
     phase = 0
   [../]
-  [./relp_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_relative_permeability_nodal
-  [../]
+#  [./relp_all_nodal]
+#    type = PorousFlowJoiner
+#    at_nodes = true
+#    material_property = PorousFlow_relative_permeability_nodal
+#  [../]
 ########## solid mechanics material########
   [./elastic_tensor]
    # type = ComputeIsotropicElasticityTensor
@@ -622,6 +599,10 @@
     temperature = T
     eigenstrain_name = eigenstrain
   [../]
+
+ # [./vol_strain_nodal_qp]
+ #   type = PorousFlowVolumetricStrain
+ # [../]
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
