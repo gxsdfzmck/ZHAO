@@ -681,8 +681,8 @@
 #    type = SolutionTimeAdaptiveDT
 #    dt = 86400
 #  [../]
-  end_time = 4.32E7 # 500 day 
-  num_steps = 500
+  end_time = 2.838E8 # 500 day 
+  #num_steps = 500
   l_tol = 1e-7
   l_max_its = 500
   nl_rel_tol = 1e-10
