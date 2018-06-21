@@ -19,15 +19,12 @@
 [GlobalParams]
   displacements = 'sdisp_x sdisp_y sdisp_z'
   PorousFlowDictator = dictator
-  gravity = '0 0 -9.8'
 []
 
 [Variables]
   [./pp]
-    scaling = 1E9
   [../]
   [./T]
-    scaling = 1E3
   [../]
   [./sdisp_x]
   [../]
@@ -97,18 +94,21 @@
     variable = velocity_x
     component = x
     aperture = 6E-3
+    gravity = '0 0 -9.8'
   [../]
   [./velocity_y]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_y
     component = y
     aperture = 6E-3
+    gravity = '0 0 -9.8'
   [../]
   [./velocity_z]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_z
     component = z
     aperture = 6E-3
+    gravity = '0 0 -9.8'
   [../]
     [./stress_xx]
     type = RankTwoAux
@@ -177,21 +177,37 @@
 
 [ICs]
   [./pp_matrix]
-    type = ConstantIC
+    type = FunctionIC 
     variable = pp
-    value = 50E6
+    function = '4.9E7-1.0E3*9.8*z'
   [../]
   [./T_initial]
     type = FunctionIC
     variable = T
     function = '548.15-50*z/1000'    
   [../]
+  
+  [./stress_xx]
+    type = ConstantIC
+    variable = stress_xx
+    value = 5.0E7
+  [../]
+  [./stress_yy]
+    type = ConstantIC
+    variable = stress_yy
+    value = 5.0E7
+  [../]
+  [./stress_zz]
+    type = FunctionIC
+    variable = stress_zz
+    function = '1.3E8-2.0E4*z'
+  [../]
 []
 
 [./Functions]
   [./top_force_pressure]
     type = ParsedFunction
-    value = '-1E8'
+    value = '1E8'
   [../]
   [./front_force_pressure]
     type = ParsedFunction
