@@ -181,37 +181,37 @@
 
 [ICs]
   [./pp_matrix]
-  # type = FunctionIC 
-  # function = initial_pp
-  # variable = pp
-    type = ConstantIC
-    variable = pp
-    value = 50E6
+   type = FunctionIC 
+   function = initial_pp
+   variable = pp
+  #  type = ConstantIC
+  #  variable = pp
+  #  value = 50E6
   [../]
   [./T_matrix]
-  # type = FunctionIC 
-  # function = initial_T
-  # variable = T
-    type = FunctionIC
-    variable = T
-    function = '548.15-50*z/1000'
+   type = FunctionIC 
+   function = initial_T
+   variable = T
+  #  type = FunctionIC
+  #  variable = T
+  #  function = '548.15-50*z/1000'
   [../]
 []
 
 [Functions]
- # [./initial_pp]
- #   type = SolutionFunction
- #   from_variable = pp
- #   solution = steady_solution_pp
- # [../]
- # [./initial_T]
- #   type = SolutionFunction
- #   from_variable = T
- #   solution = steady_solution_T
- # [../]
+  [./initial_pp]
+    type = SolutionFunction
+    from_variable = pp
+    solution = steady_solution_pp
+  [../]
+  [./initial_T]
+    type = SolutionFunction
+    from_variable = T
+    solution = steady_solution_T
+  [../]
   [./top_force_pressure]
     type = ParsedFunction
-    value = '-1E8'
+    value = '1E8'
   [../]
   [./front_force_pressure]
     type = ParsedFunction
@@ -459,18 +459,18 @@
 []
 
 [UserObjects]
- #[./steady_solution_pp]
- #  type = SolutionUserObject
- #  timestep = LATEST
- #  system_variables = 'pp' 
- #  mesh = steady_out_coarse.e
- #[../]
- #[./steady_solution_T]
- #  type = SolutionUserObject
- #  timestep = LATEST
- #  system_variables = 'T' 
- #  mesh = steady_out_coarse.e
- #[../]
+ [./steady_solution_pp]
+   type = SolutionUserObject
+   timestep = LATEST
+   system_variables = 'pp' 
+   mesh = steady_out_coarse.e
+ [../]
+ [./steady_solution_T]
+   type = SolutionUserObject
+   timestep = LATEST
+   system_variables = 'T' 
+   mesh = steady_out_coarse.e
+ [../]
   [./dictator]
     type = PorousFlowDictator
     porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
