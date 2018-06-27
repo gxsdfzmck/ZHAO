@@ -7,12 +7,12 @@
 # matrix permeanility = 1e-20
 
 [Mesh]
-  file = 'steady_out_fine.e'
- # block_id = '1 2 3'
- # block_name = 'fracture matrix1 matrix2'
- #
- # boundary_id = '1 2 1111 2222 3333 4444 5555 6666'
- # boundary_name = 'inject produce top bottom left right front back'
+  file = 'mesh_fine.e' #'steady_out_fine.e'
+  block_id = '1 2 3'
+  block_name = 'fracture matrix1 matrix2'
+ 
+  boundary_id = '1 2 1111 2222 3333 4444 5555 6666'
+  boundary_name = 'inject produce top bottom left right front back'
 []
 
 [GlobalParams]
@@ -26,8 +26,12 @@
   [./pp]
     scaling = 1E9
   [../]
-  [./T]
+  [./T_f]
+    block = 'fracture'
     scaling = 1E3
+  [../]
+  [./T_m]
+    block = 'matrix1 matrix2'
   [../]
   [./sdisp_x]
   [../]
@@ -96,19 +100,19 @@
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_x
     component = x
-    aperture = 6E-3
+    aperture = 5E-5            
   [../]
   [./velocity_y]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_y
     component = y
-    aperture = 6E-3
+    aperture = 5E-5
   [../]
   [./velocity_z]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_z
     component = z
-    aperture = 6E-3
+    aperture = 5E-5
   [../]
   [./stress_xx]
     type = RankTwoAux
@@ -152,7 +156,7 @@
     index_i = 1
     index_j = 2
   [../]
-    [./stress_zx]
+  [./stress_zx]
     type = RankTwoAux
     rank_two_tensor = stress
     variable = stress_zx
@@ -177,29 +181,34 @@
 
 [ICs]
   [./pp_matrix]
-   type = FunctionIC 
-   function = initial_pp
-   variable = pp
+  # type = FunctionIC 
+  # function = initial_pp
+  # variable = pp
+    type = ConstantIC
+    variable = pp
+    value = 50E6
   [../]
   [./T_matrix]
-   type = FunctionIC 
-   function = initial_T
-   variable = T
+  # type = FunctionIC 
+  # function = initial_T
+  # variable = T
+    type = FunctionIC
+    variable = T
+    function = '548.15-50*z/1000'
   [../]
-
 []
 
 [Functions]
-  [./initial_pp]
-    type = SolutionFunction
-    from_variable = pp
-    solution = steady_solution_pp
-  [../]
-  [./initial_T]
-    type = SolutionFunction
-    from_variable = T
-    solution = steady_solution_T
-  [../]
+ # [./initial_pp]
+ #   type = SolutionFunction
+ #   from_variable = pp
+ #   solution = steady_solution_pp
+ # [../]
+ # [./initial_T]
+ #   type = SolutionFunction
+ #   from_variable = T
+ #   solution = steady_solution_T
+ # [../]
   [./top_force_pressure]
     type = ParsedFunction
     value = '-1E8'
@@ -368,21 +377,38 @@
     fluid_component = 0
     variable = pp
   [../]
- ############ Energy Kernels ##########
-  [./EnergyTimeDeriv]
+ ############ Energy Kernels for matrix ##########
+  [./EnergyTimeDeriv_matrix]
     type = PorousFlowEnergyTimeDerivative
-    variable = T
+    variable = T_m
   [../]
-  [./EnergyAdvection]
+  [./EnergyAdvection_matrix]
     type = PorousFlowHeatAdvection
     fluid_component = 0
-    variable = T
+    variable = T_m
     gravity = '0 0 -9.8'
   [../]
   [./EnergyConduciton]
     type = PorousFlowHeatConduction
-    variable = T
+    variable = T_m
   [../]
+########### Energy Kernels for fracture #########
+  [./EnergyTimeDeriv_fracture]
+    type = PorousFlowEnergyTimeDerivative
+    variable = T_f
+  [../]
+  [./EnergyAdvection_fracture]
+    type = PorousFlowHeatAdvection
+    fluid_component = 0
+    variable = T_f
+    gravity = '0 0 -9.8'
+  [../]
+  [./EnergyConduciton_fracture]
+    type = PorousFlowHeatConduction
+    variable = T_f
+  [../]
+
+######### Tensor Mechanicals Kernels ########
   [./grad_stress_x]
     type = StressDivergenceTensors
     variable = sdisp_x
@@ -433,18 +459,18 @@
 []
 
 [UserObjects]
-  [./steady_solution_pp]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'pp' 
-    mesh = steady_out_coarse.e
-  [../]
-  [./steady_solution_T]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'T' 
-    mesh = steady_out_coarse.e
-  [../]
+ #[./steady_solution_pp]
+ #  type = SolutionUserObject
+ #  timestep = LATEST
+ #  system_variables = 'pp' 
+ #  mesh = steady_out_coarse.e
+ #[../]
+ #[./steady_solution_T]
+ #  type = SolutionUserObject
+ #  timestep = LATEST
+ #  system_variables = 'T' 
+ #  mesh = steady_out_coarse.e
+ #[../]
   [./dictator]
     type = PorousFlowDictator
     porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
@@ -455,12 +481,15 @@
 
 [Modules]
   [./FluidProperties]
-    [./simple_fluid]
-      type = SimpleFluidProperties
-      bulk_modulus = 2e9
-      density0 = 1000
-      thermal_expansion = 0
-      viscosity = 1e-3
+   # [./simple_fluid]
+   #   type = SimpleFluidProperties
+   #   bulk_modulus = 2e9
+   #   density0 = 1000
+   #   thermal_expansion = 0
+   #   viscosity = 1e-3
+   # [../]
+    [./water97property]
+      type = Water97FluidProperties
     [../]
   [../]
 []
@@ -489,9 +518,9 @@
     type = PorousFlow1PhaseFullySaturated
     porepressure = pp
   [../]
-  [./simple_fluid]
+  [./water97property]
     type = PorousFlowSingleComponentFluid
-    fp = simple_fluid
+    fp = water97property
     phase = 0
     at_nodes = true
   [../]
@@ -501,18 +530,8 @@
   [../]
   [./simple_fluid_qp]
     type = PorousFlowSingleComponentFluid
-    fp = simple_fluid
+    fp = water97property 
     phase = 0
-  [../]
-  [./energy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_fluid_phase_internal_energy_nodal
-  [../]
-  [./enthalpy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_fluid_phase_enthalpy_nodal
   [../]
   [./thermal_conductivity_matrix]
     type = PorousFlowThermalConductivityIdeal
@@ -524,45 +543,74 @@
     dry_thermal_conductivity = '1.0 0 0 0 1.0 0 0 0 1.0'
     block = 'fracture'
   [../]
-  [./dens_qp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_qp
-    at_nodes = false
-  [../]
-  [./dens_nodal_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_nodal
-    at_nodes = true
-  [../]
-  [./visc_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_viscosity_qp
-  [../]
-  [./visc_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_viscosity_nodal
-  [../]
   [./poro_fracture]
-    type = PorousFlowPorosityConst
-    porosity = 0.1   # = a * phif
+   # type = PorousFlowPorosityConst
+   # porosity = 0.1   # = a * phif
+    type = PorousFlowPorosity
+    PorousFlowDictator = dictator
+    thermal = true
+    fluid = true
+    mechanical = true
+    biot_coefficient = 1.0
+    porosity_zero = 0.1
+    solid_bulk = 2.30E10
+    thermal_expansion_coeff = 1.05E-5
+    reference_porepressure = 'pp'
+    reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix]
-    type = PorousFlowPorosityConst
-    porosity = 0.01
+   # type = PorousFlowPorosityConst
+   # porosity = 0.01
+    type = PorousFlowPorosity
+    PorousFlowDictator = dictator
+    thermal = true
+    fluid = true
+    mechanical = true
+    porosity_zero = 0.01
+    reference_porepressure = 'pp'
+    reference_temperature = 'T'
+    solid_bulk = 2.30E10 
+    biot_coefficient = 1
+    thermal_expansion_coeff = 1.0E-5
     block = 'matrix1 matrix2'
   [../]
   [./poro_fracture_nodal]
-    type = PorousFlowPorosityConst
+   # type = PorousFlowPorosityConst
+   # at_nodes = true
+   # porosity = 0.1   # = a * phif
+   # block = 'fracture'
     at_nodes = true
-    porosity = 0.1   # = a * phif
+    type = PorousFlowPorosity
+    PorousFlowDictator = dictator
+    thermal = true
+    fluid = true
+    mechanical = true
+    biot_coefficient = 1.0
+    porosity_zero = 0.1
+    solid_bulk = 2.30E10
+    thermal_expansion_coeff = 1.05E-5
+    reference_porepressure = 'pp'
+    reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix_nodal]
-    type = PorousFlowPorosityConst
+   # type = PorousFlowPorosityConst
+   # at_nodes = true
+   # porosity = 0.01
+   # block = 'matrix1 matrix2'
     at_nodes = true
-    porosity = 0.01
+    type = PorousFlowPorosity
+    PorousFlowDictator = dictator
+    thermal = true
+    fluid = true
+    mechanical = true
+    porosity_zero = 0.01
+    reference_porepressure = 'pp'
+    reference_temperature = 'T'
+    solid_bulk = 2.30E10 
+    biot_coefficient = 1
+    thermal_expansion_coeff = 1.0E-5
     block = 'matrix1 matrix2'
   [../]
   [./diff1]
@@ -578,32 +626,37 @@
     block = 'matrix1 matrix2'
   [../]
   [./permeability_fracture]
-    type = PorousFlowPermeabilityConst
-    permeability = '1.05e-8 0 0 0 1.05e-8 0 0 0 1.05e-8'   # 1.8e-11 = a * kf
+   # type = PorousFlowPermeabilityConst
+   # permeability = '1.05e-8 0 0 0 1.05e-8 0 0 0 1.05e-8'   # 1.8e-11 = a * kf
+    type = PorousFlowPermeabilityKozenyCarman
+    poroperm_function = kozeny_carman_phi0
+    PorousFlowDictator = dictator
+    m = 2
+    phi0 = 0.25
+    k0 = 1.1E-8
+    n = 3
     block = 'fracture'
   [../]
   [./permeability_matrix]
-    type = PorousFlowPermeabilityConst
-    permeability = '1.096e-16 0 0 0 1.096e-16 0 0 0 1.096e-16'
+   # type = PorousFlowPermeabilityConst
+   # permeability = '1.096e-16 0 0 0 1.096e-16 0 0 0 1.096e-16'
+    type = PorousFlowPermeabilityKozenyCarman
+    poroperm_function = kozeny_carman_phi0
+    PorousFlowDictator = dictator
+    m = 2
+    phi0 = 0.15
+    k0 = 1.096E-16
+    n = 3
     block = 'matrix1 matrix2'
   [../]
   [./relp]
     type = PorousFlowRelativePermeabilityConst
     phase = 0
   [../]
-  [./relp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_relative_permeability_qp
-  [../]
   [./relp_nodal]
     type = PorousFlowRelativePermeabilityConst
     at_nodes = true
     phase = 0
-  [../]
-  [./relp_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_relative_permeability_nodal
   [../]
 ########## solid mechanics material########
   [./elastic_tensor]
