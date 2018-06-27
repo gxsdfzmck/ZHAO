@@ -93,21 +93,21 @@
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_x
     component = x
-    aperture = 6E-3
+    aperture = 5E-5
     gravity = '0 0 -9.8'
   [../]
   [./velocity_y]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_y
     component = y
-    aperture = 6E-3
+    aperture = 5E-5
     gravity = '0 0 -9.8'
   [../]
   [./velocity_z]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_z
     component = z
-    aperture = 6E-3
+    aperture = 5E-5
     gravity = '0 0 -9.8'
   [../]
     [./stress_xx]
@@ -496,17 +496,6 @@
     fp = simple_fluid
     phase = 0
   [../]
-  [./energy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    block = 1
-    material_property = PorousFlow_fluid_phase_internal_energy_nodal
-  [../]
-  [./enthalpy_all]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_fluid_phase_enthalpy_nodal
-  [../]
   [./thermal_conductivity_matrix]
     type = PorousFlowThermalConductivityIdeal
     dry_thermal_conductivity = '3.0 0 0 0 3.0 0 0 0 3.0'
@@ -516,25 +505,6 @@
     type = PorousFlowThermalConductivityIdeal
     dry_thermal_conductivity = '1.0 0 0 0 1.0 0 0 0 1.0'
     block = 'fracture'
-  [../]
-  [./dens_qp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_qp
-    at_nodes = false
-  [../]
-  [./dens_nodal_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_nodal
-    at_nodes = true
-  [../]
-  [./visc_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_viscosity_qp
-  [../]
-  [./visc_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_viscosity_nodal
   [../]
   [./poro_fracture]
     type = PorousFlowPorosityConst
