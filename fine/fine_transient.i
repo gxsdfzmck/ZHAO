@@ -7,12 +7,12 @@
 # matrix permeanility = 1e-20
 
 [Mesh]
-  file = 'mesh_fine.e' #'steady_out_fine.e'
+  file = 'steady_out_fine.e' #'steady_out_fine.e'
   block_id = '1 2 3'
   block_name = 'fracture matrix1 matrix2'
- 
-  boundary_id = '1 2 1111 2222 3333 4444 5555 6666'
-  boundary_name = 'inject produce top bottom left right front back'
+ #
+ # boundary_id = '1 2 1111 2222 3333 4444 5555 6666'
+ # boundary_name = 'inject produce top bottom left right front back'
 []
 
 [GlobalParams]
@@ -190,11 +190,16 @@
   [../]
   [./T_matrix]
    type = FunctionIC 
-   function = initial_T
-   variable = T
+   function = initial_T_m
+   variable = T_m
   #  type = FunctionIC
   #  variable = T
   #  function = '548.15-50*z/1000'
+  [../]
+  [./T_fracture]
+    type = FunctionIC
+    function = initial_T_f
+    variable = T_f
   [../]
 []
 
@@ -204,10 +209,15 @@
     from_variable = pp
     solution = steady_solution_pp
   [../]
-  [./initial_T]
+  [./initial_T_f]
     type = SolutionFunction
-    from_variable = T
-    solution = steady_solution_T
+    from_variable = T_f
+    solution = steady_solution_T_f
+  [../]
+  [./initial_T_m]
+    type = SolutionFunction
+    from_variable = T_m
+    solution = steady_solution_T_m
   [../]
   [./top_force_pressure]
     type = ParsedFunction
@@ -274,43 +284,43 @@
   [../]
   [./Tinject]
     type = PresetBC
-    variable = T 
+    variable = T_m
     boundary = inject
     value = 303    
   [../]
   ##### Energy BC #######
   [./Ttop]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = top
   [../]
   [./Tbottom]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = bottom
     value = 0
   [../]
   [./Tleft]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = left
     value = 0
   [../]
   [./Tright]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = right
     value = 0
   [../]
   [./Tfront]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = front
     value = 0
   [../]
   [./Tback]
     type = NeumannBC
-    variable = T
+    variable = T_m
     boundary = back
     value = 0
   [../]
@@ -408,6 +418,11 @@
     variable = T_f
   [../]
 
+  [./MatrixFractureHeatTransfer]
+    type = FractureMatrixHeatExchange
+    h = '3000'
+    variable = T_f
+  [../]
 ######### Tensor Mechanicals Kernels ########
   [./grad_stress_x]
     type = StressDivergenceTensors
@@ -454,26 +469,32 @@
   [../]
   [./heat_vol_exp]
     type = PorousFlowHeatVolumetricExpansion
-    variable = T
+    variable = T_m
   [../]
 []
 
 [UserObjects]
- [./steady_solution_pp]
-   type = SolutionUserObject
-   timestep = LATEST
-   system_variables = 'pp' 
-   mesh = steady_out_coarse.e
- [../]
- [./steady_solution_T]
-   type = SolutionUserObject
-   timestep = LATEST
-   system_variables = 'T' 
-   mesh = steady_out_coarse.e
- [../]
+  [./steady_solution_pp]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'pp' 
+    mesh = steady_out_coarse.e
+  [../]
+  [./steady_solution_T_f]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'T_f' 
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_T_m]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'T_m' 
+    mesh = steady_out_fine.e
+  [../]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
+    porous_flow_vars = 'pp T_f T_m sdisp_x sdisp_y sdisp_z'
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
@@ -495,14 +516,27 @@
 []
 
 [Materials]
-  [./temperature]
+  [./temperature_fracture]
     type = PorousFlowTemperature
-    temperature = T
+    temperature = T_f
+    block = 'fracture' 
   [../]
-  [./temperature_nodal]
+  [./temperature_nodal_fracture]
     type = PorousFlowTemperature
     at_nodes = true
-    temperature = T
+    temperature = T_f
+    block = 'fracture'
+  [../]
+  [./temperature_matrix]
+    type = PorousFlowTemperature
+    temperature = T_m
+    block = 'matrix1 matrix2' 
+  [../]
+  [./temperature_nodal_matrix]
+    type = PorousFlowTemperature
+    at_nodes = true
+    temperature = T_m
+    block = 'matrix'
   [../]
   [./rock_heat]
     type = PorousFlowMatrixInternalEnergy
@@ -556,7 +590,7 @@
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
     reference_porepressure = 'pp'
-    reference_temperature = 'T'
+    reference_temperature = 'T_f'
     block = 'fracture'
   [../]
   [./poro_matrix]
@@ -569,7 +603,7 @@
     mechanical = true
     porosity_zero = 0.01
     reference_porepressure = 'pp'
-    reference_temperature = 'T'
+    reference_temperature = 'T_f'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
@@ -591,7 +625,7 @@
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
     reference_porepressure = 'pp'
-    reference_temperature = 'T'
+    reference_temperature = 'T_f'
     block = 'fracture'
   [../]
   [./poro_matrix_nodal]
@@ -607,7 +641,7 @@
     mechanical = true
     porosity_zero = 0.01
     reference_porepressure = 'pp'
-    reference_temperature = 'T'
+    reference_temperature = 'T_f'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
@@ -671,7 +705,7 @@
     type = ComputeThermalExpansionEigenstrain
     stress_free_temperature = 293
     thermal_expansion_coeff = 1.0E-5
-    temperature = T
+    temperature = T_f
     eigenstrain_name = eigenstrain
   [../]
   [./strain]
