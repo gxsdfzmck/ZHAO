@@ -28,7 +28,7 @@
     block = 'fracture'
   [../]
   [./T_m]
-    block = 'matrix1 matrix2 fracture'
+    block = 'matrix1 matrix2'
   [../]
   [./sdisp_x]
   [../]
@@ -191,9 +191,9 @@
     function = '548.15-50*z/1000'    
   [../]
   [./T_initial_fracture]
-    type = FunctionIC
+    type = ConstantIC
     variable = T_f
-    function = '548.15-50*z/1000'    
+    value = 400     
   [../]
   
   [./stress_xx]
@@ -272,6 +272,7 @@
     type = NeumannBC
     variable = T_m
     boundary = top
+    value = 0
   [../]
   [./Tbottom]
     type = NeumannBC
@@ -399,12 +400,12 @@
     type = PorousFlowHeatConduction
     variable = T_f
   [../]
-  [./MatrixFractureHeatTransfer]
-    type = FractureMatrixHeatExchange
-    h = '3000'
-    variable = T_f
-    couple_matrix_temperature = T_m
-  [../]
+ # [./MatrixFractureHeatTransfer]
+ #   type = FractureMatrixHeatExchange
+ #   h = '3000'
+ #   variable = T_f
+ #   couple_matrix_temperature = T_m
+ # [../]
 
 ##### solid mechancis #########
   [./grad_stress_x]
@@ -620,14 +621,14 @@
     eigenstrain_name = eigenstrain_matrix
     block = 'matrix1 matrix2'
   [../]
-  [./thermal_expansion_strain_fracture]
-    type = ComputeThermalExpansionEigenstrain
-    stress_free_temperature = 293
-    thermal_expansion_coeff = 1.0E-5 
-    temperature = T_f
-    eigenstrain_name = eigenstrain_fracture
-    block = 'fracture'
-  [../]
+ # [./thermal_expansion_strain_fracture]
+ #   type = ComputeThermalExpansionEigenstrain
+ #   stress_free_temperature = 293
+ #   thermal_expansion_coeff = 1.0E-5 
+ #   temperature = T_f
+ #   eigenstrain_name = eigenstrain_fracture
+ #   block = 'fracture'
+ # [../]
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
