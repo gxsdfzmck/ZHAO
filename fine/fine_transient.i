@@ -26,12 +26,8 @@
   [./pp]
     scaling = 1E9
   [../]
-  [./T_f]
-    block = 'fracture'
+  [./T]
     scaling = 1E3
-  [../]
-  [./T_m]
-    block = 'matrix1 matrix2'
   [../]
   [./sdisp_x]
   [../]
@@ -184,22 +180,11 @@
    type = FunctionIC 
    function = initial_pp
    variable = pp
-  #  type = ConstantIC
-  #  variable = pp
-  #  value = 50E6
   [../]
   [./T_matrix]
    type = FunctionIC 
-   function = initial_T_m
-   variable = T_m
-  #  type = FunctionIC
-  #  variable = T
-  #  function = '548.15-50*z/1000'
-  [../]
-  [./T_fracture]
-    type = FunctionIC
-    function = initial_T_f
-    variable = T_f
+   function = initial_T
+   variable = T
   [../]
 []
 
@@ -209,15 +194,10 @@
     from_variable = pp
     solution = steady_solution_pp
   [../]
-  [./initial_T_f]
+  [./initial_T]
     type = SolutionFunction
-    from_variable = T_f
-    solution = steady_solution_T_f
-  [../]
-  [./initial_T_m]
-    type = SolutionFunction
-    from_variable = T_m
-    solution = steady_solution_T_m
+    from_variable = T
+    solution = steady_solution_T
   [../]
   [./top_force_pressure]
     type = ParsedFunction
@@ -284,43 +264,44 @@
   [../]
   [./Tinject]
     type = PresetBC
-    variable = T_m
+    variable = T
     boundary = inject
     value = 303    
   [../]
   ##### Energy BC #######
   [./Ttop]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = top
+    value = 0
   [../]
   [./Tbottom]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = bottom
     value = 0
   [../]
   [./Tleft]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = left
     value = 0
   [../]
   [./Tright]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = right
     value = 0
   [../]
   [./Tfront]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = front
     value = 0
   [../]
   [./Tback]
     type = NeumannBC
-    variable = T_m
+    variable = T
     boundary = back
     value = 0
   [../]
@@ -330,10 +311,6 @@
     component = 2
     function = top_force_pressure  # 100MPa
     boundary = top
-   # type = PresetBC
-   # variable = sdisp_z
-   # value = 0
-   # boundary = top
   [../]
 ########## solid mechanics BCS ###########
   [./solid_bottom]
@@ -363,10 +340,6 @@
     use_displaced_mesh = false
     function = front_force_pressure
     boundary = front
-   # type = PresetBC
-   # variable = sdisp_x
-   # value = 0
-   # boundary = front
   [../]
   [./solid_back]
     type = PresetBC
@@ -390,38 +363,17 @@
  ############ Energy Kernels for matrix ##########
   [./EnergyTimeDeriv_matrix]
     type = PorousFlowEnergyTimeDerivative
-    variable = T_m
+    variable = T
   [../]
   [./EnergyAdvection_matrix]
     type = PorousFlowHeatAdvection
     fluid_component = 0
-    variable = T_m
+    variable = T
     gravity = '0 0 -9.8'
   [../]
   [./EnergyConduciton]
     type = PorousFlowHeatConduction
-    variable = T_m
-  [../]
-########### Energy Kernels for fracture #########
-  [./EnergyTimeDeriv_fracture]
-    type = PorousFlowEnergyTimeDerivative
-    variable = T_f
-  [../]
-  [./EnergyAdvection_fracture]
-    type = PorousFlowHeatAdvection
-    fluid_component = 0
-    variable = T_f
-    gravity = '0 0 -9.8'
-  [../]
-  [./EnergyConduciton_fracture]
-    type = PorousFlowHeatConduction
-    variable = T_f
-  [../]
-
-  [./MatrixFractureHeatTransfer]
-    type = FractureMatrixHeatExchange
-    h = '3000'
-    variable = T_f
+    variable = T
   [../]
 ######### Tensor Mechanicals Kernels ########
   [./grad_stress_x]
@@ -469,7 +421,7 @@
   [../]
   [./heat_vol_exp]
     type = PorousFlowHeatVolumetricExpansion
-    variable = T_m
+    variable = T
   [../]
 []
 
@@ -478,23 +430,17 @@
     type = SolutionUserObject
     timestep = LATEST
     system_variables = 'pp' 
-    mesh = steady_out_coarse.e
-  [../]
-  [./steady_solution_T_f]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'T_f' 
     mesh = steady_out_fine.e
   [../]
-  [./steady_solution_T_m]
+  [./steady_solution_T]
     type = SolutionUserObject
     timestep = LATEST
-    system_variables = 'T_m' 
+    system_variables = 'T' 
     mesh = steady_out_fine.e
   [../]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp T_f T_m sdisp_x sdisp_y sdisp_z'
+    porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
@@ -516,27 +462,14 @@
 []
 
 [Materials]
-  [./temperature_fracture]
-    type = PorousFlowTemperature
-    temperature = T_f
-    block = 'fracture' 
-  [../]
-  [./temperature_nodal_fracture]
-    type = PorousFlowTemperature
-    at_nodes = true
-    temperature = T_f
-    block = 'fracture'
-  [../]
   [./temperature_matrix]
     type = PorousFlowTemperature
-    temperature = T_m
-    block = 'matrix1 matrix2' 
+    temperature = T
   [../]
   [./temperature_nodal_matrix]
     type = PorousFlowTemperature
     at_nodes = true
-    temperature = T_m
-    block = 'matrix'
+    temperature = T
   [../]
   [./rock_heat]
     type = PorousFlowMatrixInternalEnergy
@@ -578,8 +511,6 @@
     block = 'fracture'
   [../]
   [./poro_fracture]
-   # type = PorousFlowPorosityConst
-   # porosity = 0.1   # = a * phif
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
     thermal = true
@@ -590,12 +521,10 @@
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
     reference_porepressure = 'pp'
-    reference_temperature = 'T_f'
+    reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix]
-   # type = PorousFlowPorosityConst
-   # porosity = 0.01
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
     thermal = true
@@ -603,17 +532,13 @@
     mechanical = true
     porosity_zero = 0.01
     reference_porepressure = 'pp'
-    reference_temperature = 'T_f'
+    reference_temperature = 'T'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
     block = 'matrix1 matrix2'
   [../]
   [./poro_fracture_nodal]
-   # type = PorousFlowPorosityConst
-   # at_nodes = true
-   # porosity = 0.1   # = a * phif
-   # block = 'fracture'
     at_nodes = true
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
@@ -625,7 +550,7 @@
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
     reference_porepressure = 'pp'
-    reference_temperature = 'T_f'
+    reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix_nodal]
@@ -641,7 +566,7 @@
     mechanical = true
     porosity_zero = 0.01
     reference_porepressure = 'pp'
-    reference_temperature = 'T_f'
+    reference_temperature = 'T'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
@@ -705,7 +630,7 @@
     type = ComputeThermalExpansionEigenstrain
     stress_free_temperature = 293
     thermal_expansion_coeff = 1.0E-5
-    temperature = T_f
+    temperature = T
     eigenstrain_name = eigenstrain
   [../]
   [./strain]
