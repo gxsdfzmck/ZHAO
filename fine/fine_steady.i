@@ -110,7 +110,7 @@
     aperture = 5E-5
     gravity = '0 0 -9.8'
   [../]
-    [./stress_xx]
+  [./stress_xx]
     type = RankTwoAux
     rank_two_tensor = stress
     variable = stress_xx
@@ -179,30 +179,18 @@
   [./pp_matrix]
     type = FunctionIC 
     variable = pp
-    function = '4.9E7-1.0E3*9.8*z'
+    function = '5.0E7+4.9E7-1.0E3*9.8*z'
+   # type = ConstantIC
+   # variable = pp
+   # value = 5.0E7
   [../]
   [./T_initial]
     type = FunctionIC
     variable = T
     function = '548.15-50*z/1000'    
   [../]
-  
-  [./stress_xx]
-    type = ConstantIC
-    variable = stress_xx
-    value = 5.0E7
-  [../]
-  [./stress_yy]
-    type = ConstantIC
-    variable = stress_yy
-    value = 5.0E7
-  [../]
-  [./stress_zz]
-    type = FunctionIC
-    variable = stress_zz
-    function = '1.3E8-2.0E4*z'
-  [../]
-[]
+[]  
+
 
 [./Functions]
   [./top_force_pressure]
@@ -263,6 +251,7 @@
     type = NeumannBC
     variable = T
     boundary = top
+    value = 0 
   [../]
   [./Tbottom]
     type = NeumannBC
@@ -446,13 +435,8 @@
 
 [Modules]
   [./FluidProperties]
-    [./simple_fluid]
-      type = SimpleFluidProperties
-      bulk_modulus = 1.89E10
-      density0 = 1.07E3
-      thermal_expansion = 0
-      viscosity = 1e-3
-      cv = 4.05E3
+    [./water97property]
+      type = Water97FluidProperties
     [../]
   [../]
 []
@@ -483,7 +467,7 @@
   [../]
   [./simple_fluid]
     type = PorousFlowSingleComponentFluid
-    fp = simple_fluid
+    fp = water97property 
     phase = 0
     at_nodes = true
   [../]
@@ -493,7 +477,7 @@
   [../]
   [./simple_fluid_qp]
     type = PorousFlowSingleComponentFluid
-    fp = simple_fluid
+    fp = water97property 
     phase = 0
   [../]
   [./thermal_conductivity_matrix]
@@ -570,12 +554,12 @@
   [../]
 ########## solid mechanics material########
   [./elastic_tensor]
-   # type = ComputeIsotropicElasticityTensor
-   # youngs_modulus = 4.84E10
-   # poissions_ratio = 0.15
-    type = ComputeElasticityTensor
-    C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
-    fill_method = symmetric_isotropic
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 4.84E10
+    poissons_ratio = 0.15
+   # type = ComputeElasticityTensor
+   # C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
+   # fill_method = symmetric_isotropic
   [../]
   [./thermal_expansion_strain]
     type = ComputeThermalExpansionEigenstrain
