@@ -201,6 +201,11 @@
     function = initial_disp_z
     variable = sdisp_z
   [../]
+  [./stress_xx]
+    type = FunctionIC
+    function = initial_stress_xx
+    variable = stress_xx
+  [../]
 []
 
 [Functions]
@@ -229,6 +234,12 @@
     from_variable = sdisp_z
     solution = steady_solution_disp_z
   [../]
+  [./initial_stress_xx]
+    type = SolutionFunction
+    from_variable = stress_xx
+    solution = steady_solution_stress_xx
+  [../]
+  [./steady_solution_stress_x]
   [./top_force_pressure]
     type = ParsedFunction
     value = '1E8'
@@ -484,6 +495,12 @@
     type = SolutionUserObject
     timestep = LATEST
     system_variables = 'sdisp_z'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_xx]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_xx'
     mesh = steady_out_fine.e
   [../]
   [./dictator]
