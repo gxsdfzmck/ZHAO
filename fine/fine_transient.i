@@ -514,25 +514,27 @@
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
     thermal = true
+    ensure_positive = true
     fluid = true
     mechanical = true
     biot_coefficient = 1.0
     porosity_zero = 0.1
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
-    reference_porepressure = 'pp'
-    reference_temperature = 'T'
+   # reference_porepressure = 'pp'
+   # reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix]
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
+    ensure_positive = true
     thermal = true
     fluid = true
     mechanical = true
     porosity_zero = 0.01
-    reference_porepressure = 'pp'
-    reference_temperature = 'T'
+   # reference_porepressure = 'pp'
+   # reference_temperature = 'T'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
@@ -542,6 +544,7 @@
     at_nodes = true
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
+    ensure_positive = true
     thermal = true
     fluid = true
     mechanical = true
@@ -549,24 +552,21 @@
     porosity_zero = 0.1
     solid_bulk = 2.30E10
     thermal_expansion_coeff = 1.05E-5
-    reference_porepressure = 'pp'
-    reference_temperature = 'T'
+   # reference_porepressure = 'pp'
+   # reference_temperature = 'T'
     block = 'fracture'
   [../]
   [./poro_matrix_nodal]
-   # type = PorousFlowPorosityConst
-   # at_nodes = true
-   # porosity = 0.01
-   # block = 'matrix1 matrix2'
     at_nodes = true
     type = PorousFlowPorosity
     PorousFlowDictator = dictator
+    ensure_positive = true
     thermal = true
     fluid = true
     mechanical = true
     porosity_zero = 0.01
-    reference_porepressure = 'pp'
-    reference_temperature = 'T'
+   # reference_porepressure = 'pp'
+   # reference_temperature = 'T'
     solid_bulk = 2.30E10 
     biot_coefficient = 1
     thermal_expansion_coeff = 1.0E-5
@@ -619,12 +619,12 @@
   [../]
 ########## solid mechanics material########
   [./elastic_tensor]
-   # type = ComputeIsotropicElasticityTensor
-   # youngs_modulus = 4.84E10
-   # poissions_ratio = 0.15
-    type = ComputeElasticityTensor
-    C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
-    fill_method = symmetric_isotropic
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 4.84E10
+    poissons_ratio = 0.15
+   # type = ComputeElasticityTensor
+   # C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
+   # fill_method = symmetric_isotropic
   [../]
   [./thermal_expansion_strain]
     type = ComputeThermalExpansionEigenstrain
@@ -689,16 +689,15 @@
 
   petsc_options_value = 'hypre boomeramg 201 cubic 0.7'
   
-#  [./TimeStepper]
-#    type = SolutionTimeAdaptiveDT
-#    dt = 86400
-#  [../]
-  end_time = 4.32E7 # 500 day 
-  num_steps = 500
-  l_tol = 1e-7
-  l_max_its = 500
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-7
+  [./TimeStepper]
+    type = SolutionTimeAdaptiveDT
+    dt = 8640
+  [../]
+    end_time = 4.32E7 # 500 day 
+    l_tol = 1e-7
+    l_max_its = 500
+    nl_rel_tol = 1e-10
+    nl_abs_tol = 1e-7
 []
 
 #[VectorPostprocessors]

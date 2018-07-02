@@ -179,7 +179,7 @@
   [./pp_matrix]
     type = FunctionIC 
     variable = pp
-    function = '5.0E7+4.9E7-1.0E3*9.8*z'
+    function = '1.013E5+4.9E7-1.0E3*9.8*z'
    # type = ConstantIC
    # variable = pp
    # value = 5.0E7
