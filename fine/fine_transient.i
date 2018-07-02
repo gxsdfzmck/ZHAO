@@ -206,6 +206,11 @@
     function = initial_stress_xx
     variable = stress_xx
   [../]
+  [./stress_xy]
+    type = FunctionIC
+    function = initial_stress_xy
+    variable = stress_xy
+  [../]
 []
 
 [Functions]
@@ -239,7 +244,26 @@
     from_variable = stress_xx
     solution = steady_solution_stress_xx
   [../]
-  [./steady_solution_stress_x]
+  [./initial_stress_xy]
+    type = SolutionFunction
+    from_variable = stress_xy
+    solution = steady_solution_stress_xy
+  [../]
+  [./initial_stress_xz]
+    type = SolutionFunction
+    from_variable = stress_xz
+    solution = steady_solution_stress_xz
+  [../]
+  [./initial_stress_yy]
+    type = SolutionFunction
+    from_variable = stress_yy
+    solution = steady_solution_stress_yy
+  [../]
+  [./initial_stress_zz]
+    type = SolutionFunction
+    from_variable = stress_zz
+    solution = steady_solution_stress_zz
+  [../]
   [./top_force_pressure]
     type = ParsedFunction
     value = '1E8'
@@ -501,6 +525,54 @@
     type = SolutionUserObject
     timestep = LATEST
     system_variables = 'stress_xx'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_xy]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_xy'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_xz]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_xz'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_yx]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_yx'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_yy]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_yy'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_yz]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_yz'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_zx]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_zx'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_zy]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_zy'
+    mesh = steady_out_fine.e
+  [../]
+  [./steady_solution_stress_zz]
+    type = SolutionUserObject
+    timestep = LATEST
+    system_variables = 'stress_zz'
     mesh = steady_out_fine.e
   [../]
   [./dictator]
