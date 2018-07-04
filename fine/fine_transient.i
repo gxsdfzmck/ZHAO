@@ -211,6 +211,21 @@
     function = initial_stress_xy
     variable = stress_xy
   [../]
+  [./stress_xz]
+    type = FunctionIC
+    function = initial_stress_xz
+    variable = stress_xz
+  [../]
+  [./stress_yy]
+    type = FunctionIC
+    function = initial_stress_yy
+    variable = stress_yy
+  [../]
+  [./stress_zz]
+    type = FunctionIC
+    function = initial_stress_zz
+    variable = stress_zz
+  [../]
 []
 
 [Functions]
@@ -270,11 +285,11 @@
   [../]
   [./front_force_pressure]
     type = ParsedFunction
-    value = '80+(5000-z)*(180-80)/5000'
+    value = '(80+(5000-z)*(180-80)/5000)*1.0E6'
   [../]
   [./right_force_pressure]
     type = ParsedFunction
-    value = '120+(5000-z)*(270-120)/5000'
+    value = '(120+(5000-z)*(270-120)/5000)*1.0E6'
   [../]
 []
 
@@ -300,7 +315,7 @@
   [./pright]
     type = NeumannBC 
     variable = pp
-    boundary = right 
+    boundary = right
     value = 0
   [../]
   [./pfront]
@@ -539,12 +554,6 @@
     system_variables = 'stress_xz'
     mesh = steady_out_fine.e
   [../]
-  [./steady_solution_stress_yx]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_yx'
-    mesh = steady_out_fine.e
-  [../]
   [./steady_solution_stress_yy]
     type = SolutionUserObject
     timestep = LATEST
@@ -555,18 +564,6 @@
     type = SolutionUserObject
     timestep = LATEST
     system_variables = 'stress_yz'
-    mesh = steady_out_fine.e
-  [../]
-  [./steady_solution_stress_zx]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_zx'
-    mesh = steady_out_fine.e
-  [../]
-  [./steady_solution_stress_zy]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_zy'
     mesh = steady_out_fine.e
   [../]
   [./steady_solution_stress_zz]
