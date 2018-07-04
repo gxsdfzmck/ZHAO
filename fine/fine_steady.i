@@ -199,11 +199,11 @@
   [../]
   [./front_force_pressure]
     type = ParsedFunction
-    value = '80+(5000-z)*(180-80)/5000'
+    value = '(80+(5000-z)*(180-80)/5000)*1.0E6'
   [../]
   [./right_force_pressure]
     type = ParsedFunction
-    value = '120+(5000-z)*(270-120)/5000'
+    value = '(120+(5000-z)*(270-120)/5000)*1.0E6'
   [../]
 []
 
