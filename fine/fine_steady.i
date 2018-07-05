@@ -524,7 +524,6 @@
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
     eigenstrain_names = eigenstrain
-   # type = ComputeIncrementalSmallStrain
   [../]
   [./density]
     type = GenericConstantMaterial
