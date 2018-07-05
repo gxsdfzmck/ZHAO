@@ -294,41 +294,11 @@
 []
 
 [BCs]
-  [./ptop]
-    type = NeumannBC 
+  [./pBC]
+    type = FunctionPresetBC 
     variable = pp
-    boundary =  top
-    value = 0
-  [../]
-  [./pbottom]
-    type = NeumannBC 
-    variable = pp
-    boundary = bottom 
-    value = 0 
-  [../]
-  [./pleft]
-    type = NeumannBC 
-    variable = pp
-    boundary = left
-    value = 0
-  [../]
-  [./pright]
-    type = NeumannBC 
-    variable = pp
-    boundary = right
-    value = 0
-  [../]
-  [./pfront]
-    type = NeumannBC 
-    variable = pp
-    boundary = front
-    value = 0
-  [../]
-  [./pback]
-    type = NeumannBC 
-    variable = pp
-    boundary = back
-    value = 0
+    boundary =  'top bottom left right front back'
+    function = initial_pp
   [../]
   [./pInject]
     type = PresetBC
@@ -349,42 +319,42 @@
     value = 303    
   [../]
   ##### Energy BC #######
-  [./Ttop]
-    type = NeumannBC
+  [./T_BC]
+    type = FunctionPresetBC
     variable = T
-    boundary = top
-    value = 0
+    boundary = 'top bottom left right front back'
+    function = initial_T
   [../]
-  [./Tbottom]
-    type = NeumannBC
-    variable = T
-    boundary = bottom
-    value = 0
-  [../]
-  [./Tleft]
-    type = NeumannBC
-    variable = T
-    boundary = left
-    value = 0
-  [../]
-  [./Tright]
-    type = NeumannBC
-    variable = T
-    boundary = right
-    value = 0
-  [../]
-  [./Tfront]
-    type = NeumannBC
-    variable = T
-    boundary = front
-    value = 0
-  [../]
-  [./Tback]
-    type = NeumannBC
-    variable = T
-    boundary = back
-    value = 0
-  [../]
+ # [./Tbottom]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = bottom
+ #   value = 0
+ # [../]
+ # [./Tleft]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = left
+ #   value = 0
+ # [../]
+ # [./Tright]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = right
+ #   value = 0
+ # [../]
+ # [./Tfront]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = front
+ #   value = 0
+ # [../]
+ # [./Tback]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = back
+ #   value = 0
+ # [../]
   [./solid_top]
     type = Pressure
     variable = sdisp_z
@@ -578,6 +548,11 @@
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
+  [./pc]
+    type = PorousFlowCapillaryPressureVG
+    alpha = 1E-8
+    m = 0.5
+  [../]
 []
 
 [Modules]
@@ -609,15 +584,18 @@
     type = PorousFlowMatrixInternalEnergy
     specific_heat_capacity = 1.08E3
     density = 2.7E3
+ 1
   [../]
   [./ppss]
     type = PorousFlow1PhaseFullySaturated
     at_nodes = true
     porepressure = pp
+    capollary_pressure = pc
   [../]
   [./ppss_qp]
     type = PorousFlow1PhaseFullySaturated
     porepressure = pp
+    capollary_pressure = pc
   [../]
   [./water97property]
     type = PorousFlowSingleComponentFluid
