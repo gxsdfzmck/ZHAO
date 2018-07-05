@@ -186,21 +186,21 @@
    function = initial_T
    variable = T
   [../]
-  [./sdisp_x]
-    type = FunctionIC
-    function = initial_disp_x
-    variable = sdisp_x
-  [../]
-  [./sdisp_y]
-    type = FunctionIC
-    function = initial_disp_y
-    variable = sdisp_y
-  [../]
-  [./sdisp_z]
-    type = FunctionIC
-    function = initial_disp_z
-    variable = sdisp_z
-  [../]
+ # [./sdisp_x]
+ #   type = FunctionIC
+ #   function = initial_disp_x
+ #   variable = sdisp_x
+ # [../]
+ # [./sdisp_y]
+ #   type = FunctionIC
+ #   function = initial_disp_y
+ #   variable = sdisp_y
+ # [../]
+ # [./sdisp_z]
+ #   type = FunctionIC
+ #   function = initial_disp_z
+ #   variable = sdisp_z
+ # [../]
   [./stress_xx]
     type = FunctionIC
     function = initial_stress_xx
@@ -239,21 +239,21 @@
     from_variable = T
     solution = steady_solution_T
   [../]
-  [./initial_disp_x]
-    type = SolutionFunction
-    from_variable = sdisp_x
-    solution = steady_solution_disp_x
-  [../]
-  [./initial_disp_y]
-    type = SolutionFunction
-    from_variable = sdisp_y
-    solution = steady_solution_disp_y
-  [../]
-  [./initial_disp_z]
-    type = SolutionFunction
-    from_variable = sdisp_z
-    solution = steady_solution_disp_z
-  [../]
+ # [./initial_disp_x]
+ #   type = SolutionFunction
+ #   from_variable = sdisp_x
+ #   solution = steady_solution_disp_x
+ # [../]
+ # [./initial_disp_y]
+ #   type = SolutionFunction
+ #   from_variable = sdisp_y
+ #   solution = steady_solution_disp_y
+ # [../]
+ # [./initial_disp_z]
+ #   type = SolutionFunction
+ #   from_variable = sdisp_z
+ #   solution = steady_solution_disp_z
+ # [../]
   [./initial_stress_xx]
     type = SolutionFunction
     from_variable = stress_xx
@@ -518,24 +518,24 @@
     system_variables = 'T' 
     mesh = steady_out_fine.e
   [../]
-  [./steady_solution_disp_x]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'sdisp_x'
-    mesh = steady_out_fine.e
-  [../]
-  [./steady_solution_disp_y]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'sdisp_y'
-    mesh = steady_out_fine.e
-  [../]
-  [./steady_solution_disp_z]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'sdisp_z'
-    mesh = steady_out_fine.e
-  [../]
+ # [./steady_solution_disp_x]
+ #   type = SolutionUserObject
+ #   timestep = LATEST
+ #   system_variables = 'sdisp_x'
+ #   mesh = steady_out_fine.e
+ # [../]
+ # [./steady_solution_disp_y]
+ #   type = SolutionUserObject
+ #   timestep = LATEST
+ #   system_variables = 'sdisp_y'
+ #   mesh = steady_out_fine.e
+ # [../]
+ # [./steady_solution_disp_z]
+ #   type = SolutionUserObject
+ #   timestep = LATEST
+ #   system_variables = 'sdisp_z'
+ #   mesh = steady_out_fine.e
+ # [../]
   [./steady_solution_stress_xx]
     type = SolutionUserObject
     timestep = LATEST
@@ -770,6 +770,7 @@
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
+    eigenstrain_names = eigenstrain
    # type = ComputeIncrementalSmallStrain
   [../]
   [./density]
@@ -825,7 +826,7 @@
   
   [./TimeStepper]
     type = SolutionTimeAdaptiveDT
-    dt = 8640
+    dt = 864
   [../]
     end_time = 4.32E7 # 500 day 
     l_tol = 1e-7
