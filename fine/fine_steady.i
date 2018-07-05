@@ -19,6 +19,7 @@
 [GlobalParams]
   displacements = 'sdisp_x sdisp_y sdisp_z'
   PorousFlowDictator = dictator
+  gravity = '0 0 -9.8'
 []
 
 [Variables]
@@ -94,21 +95,18 @@
     variable = velocity_x
     component = x
     aperture = 5E-5
-    gravity = '0 0 -9.8'
   [../]
   [./velocity_y]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_y
     component = y
     aperture = 5E-5
-    gravity = '0 0 -9.8'
   [../]
   [./velocity_z]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_z
     component = z
     aperture = 5E-5
-    gravity = '0 0 -9.8'
   [../]
   [./stress_xx]
     type = RankTwoAux
@@ -180,9 +178,6 @@
     type = FunctionIC 
     variable = pp
     function = '1.013E5+4.9E7-1.0E3*9.8*z'
-   # type = ConstantIC
-   # variable = pp
-   # value = 5.0E7
   [../]
   [./T_initial]
     type = FunctionIC
@@ -190,23 +185,6 @@
     function = '548.15-50*z/1000'    
   [../]
 []  
-
-
-[./Functions]
-  [./top_force_pressure]
-    type = ParsedFunction
-    value = '1E8'
-  [../]
-  [./front_force_pressure]
-    type = ParsedFunction
-    value = '(80+(5000-z)*(180-80)/5000)*1.0E6'
-  [../]
-  [./right_force_pressure]
-    type = ParsedFunction
-    value = '(120+(5000-z)*(270-120)/5000)*1.0E6'
-  [../]
-[]
-
 
 [BCs]
   ### pore pressure BC ###
@@ -298,13 +276,9 @@
   [./solid_top]
     type = Pressure
     variable = sdisp_z
+    factor = 1.0E8
     component = 2
-    function = top_force_pressure  # 100MPa
     boundary = top
-   # type = PresetBC
-   # variable = sdisp_z
-   # value = 0
-   # boundary = top
   [../]
   [./solid_bottom]
     type = PresetBC
@@ -322,25 +296,17 @@
     type = Pressure
     variable = sdisp_y
     component = 1
-    function = right_force_pressure
+    function = '(120+(5000-z)*(270-120)/5000)*1.0E6' 
     use_displaced_mesh = false
     boundary = right
-   # type = PresetBC
-   # variable = sdisp_y
-   # value = 0
-   # boundary = right
   [../]
   [./solid_front]
     type = Pressure
     variable = sdisp_x
     component = 0
     use_displaced_mesh = false
-    function = front_force_pressure
+    function = '(80+(5000-z)*(180-80)/5000)*1.0E6'
     boundary = front
-   # type = PresetBC
-   # variable = sdisp_x
-   # value = 0
-   # boundary = front
   [../]
   [./solid_back]
     type = PresetBC
@@ -396,7 +362,7 @@
   [./gravity_z]
     type = Gravity
     variable = sdisp_z
-    value = -9.8
+    value = 9.8
     use_displaced_mesh = false
   [../]
   [./poro_x]
@@ -425,11 +391,6 @@
     porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
     number_fluid_phases = 1
     number_fluid_components = 1
-  [../]
-  [./ts]
-    # large so that there is no plastic deformation
-    type = TensorMechanicsHardeningConstant
-    value = 1E16
   [../]
 []
 
@@ -538,19 +499,10 @@
     type = PorousFlowRelativePermeabilityConst
     phase = 0
   [../]
-  [./relp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_relative_permeability_qp
-  [../]
   [./relp_nodal]
     type = PorousFlowRelativePermeabilityConst
     at_nodes = true
     phase = 0
-  [../]
-  [./relp_all_nodal]
-    type = PorousFlowJoiner
-    at_nodes = true
-    material_property = PorousFlow_relative_permeability_nodal
   [../]
 ########## solid mechanics material########
   [./elastic_tensor]
@@ -571,6 +523,7 @@
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
+    eigenstrain_names = eigenstrain
    # type = ComputeIncrementalSmallStrain
   [../]
   [./density]
