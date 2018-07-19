@@ -19,20 +19,29 @@
 [GlobalParams]
   displacements = 'sdisp_x sdisp_y sdisp_z'
   PorousFlowDictator = dictator
-  gravity = '0 0 -9.8'
 []
 
 [Variables]
   [./pp]
+    scaling = 1.0E-14
   [../]
+
   [./T]
+    scaling = 1.0E-14
   [../]
+
   [./sdisp_x]
+    scaling = 1.0E-15
   [../]
+
   [./sdisp_y]
+    scaling = 1.0E-15
   [../]
+
   [./sdisp_z]
+    scaling = 1.0E-15
   [../]
+
 []
 
 [AuxVariables]
@@ -95,19 +104,25 @@
     variable = velocity_x
     component = x
     aperture = 5E-5
+    gravity = '0 0 -9.8'
   [../]
+
   [./velocity_y]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_y
     component = y
     aperture = 5E-5
+    gravity = '0 0 -9.8'
   [../]
+
   [./velocity_z]
     type = PorousFlowDarcyVelocityComponentLowerDimensional
     variable = velocity_z
     component = z
     aperture = 5E-5
+    gravity = '0 0 -9.8'
   [../]
+
   [./stress_xx]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -115,6 +130,7 @@
     index_i = 0
     index_j = 0
   [../]
+
   [./stress_xy]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -122,6 +138,7 @@
     index_i = 0
     index_j = 1
   [../]
+
   [./stress_xz]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -129,6 +146,7 @@
     index_i = 0
     index_j = 2
   [../]
+
   [./stress_yx]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -136,6 +154,7 @@
     index_i = 1
     index_j = 0
   [../]
+
   [./stress_yy]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -143,6 +162,7 @@
     index_i = 1
     index_j = 1
   [../]
+
   [./stress_yz]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -150,13 +170,15 @@
     index_i = 1
     index_j = 2
   [../]
-    [./stress_zx]
+
+  [./stress_zx]
     type = RankTwoAux
     rank_two_tensor = stress
     variable = stress_zx
     index_i = 2
     index_j = 0
   [../]
+
   [./stress_zy]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -164,6 +186,7 @@
     index_i = 2
     index_j = 1
   [../]
+
   [./stress_zz]
     type = RankTwoAux
     rank_two_tensor = stress
@@ -173,18 +196,45 @@
   [../]
 []
 
+
 [ICs]
   [./pp_matrix]
     type = FunctionIC 
     variable = pp
-    function = '1.013E5+4.9E7-1.0E3*9.8*z'
+    function = '1.013E5+1.0E3*9.8*4000-1.0E3*9.8*z'
   [../]
+
   [./T_initial]
     type = FunctionIC
     variable = T
-    function = '548.15-50*z/1000'    
+    function = '298.15+4000*50/1000-50*z/1000'    
+  [../]  
+[]
+
+[Functions]
+  [./weight_fcn]
+    type = ParsedFunction
+    vars = 'g p0 rho0 biot'
+    vals = '9.8 101325 1000 1.0'
+    value = 'biot*(p0-rho0*g*z)-(1.0E8-2683*g*z)'
+  [../]   
+ 
+  [./kxx_fcn]
+    type = ParsedFunction
+    vars = 'g B p0 rho0 biot'
+    vals = '9.8 2.0E9 101325 1000 1.0'
+    value = 'biot*(101325-rho0*g*z)-(80*1.0E6-(180-80)/5000*1.0E6*z)'
   [../]
-[]  
+  
+  [./kyy_fcn]
+    type = ParsedFunction
+    vars = 'g B p0 rho0 biot'
+    vals = '9.8 2.0E9 101325 1000 1.0'
+    value = 'biot*(101325-rho0*g*z)-(120*1.0E6-(270-120)/5000*1.0E6*z)'
+  [../]
+  
+[]
+
 
 [BCs]
   ### pore pressure BC ###
@@ -226,40 +276,45 @@
   [../]
   ##### Energy BC #######
   [./Ttop]
-    type = NeumannBC
+    type = FunctionPresetBC 
     variable = T
     boundary = top
-    value = 0 
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
+
   [./Tbottom]
-    type = NeumannBC
+    type = FunctionPresetBC
     variable = T
     boundary = bottom
-    value = 0
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
+
   [./Tleft]
-    type = NeumannBC
+    type = FunctionPresetBC 
     variable = T
     boundary = left
-    value = 0
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
+
   [./Tright]
-    type = NeumannBC
+    type = FunctionPresetBC 
     variable = T
     boundary = right
-    value = 0
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
+
   [./Tfront]
-    type = NeumannBC
+    type = FunctionPresetBC 
     variable = T
     boundary = front
-    value = 0
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
+
   [./Tback]
-    type = NeumannBC
+    type = FunctionPresetBC 
     variable = T
     boundary = back
-    value = 0
+    function = '298.15+4000*50/1000-50*z/1000'    
   [../]
  # [./pInject]
  #   type = PresetBC
@@ -276,38 +331,43 @@
   [./solid_top]
     type = Pressure
     variable = sdisp_z
-    factor = 1.0E8
     component = 2
+    factor = 1.0E8
     boundary = top
   [../]
+
   [./solid_bottom]
     type = PresetBC
     variable = sdisp_z
     value = 0
     boundary = bottom
   [../]
+
   [./solid_left]
     type = PresetBC
     variable = sdisp_y
     value = 0
     boundary = left
   [../]
+
   [./solid_right]
     type = Pressure
     variable = sdisp_y
     component = 1
-    function = '(120+(5000-z)*(270-120)/5000)*1.0E6' 
+    function = '(120-z*(270-120)/5000)*1.0E6'  
     use_displaced_mesh = false
     boundary = right
   [../]
+
   [./solid_front]
     type = Pressure
     variable = sdisp_x
     component = 0
+    function = '(80-z*(180-80)/5000)*1.0E6'
     use_displaced_mesh = false
-    function = '(80+(5000-z)*(180-80)/5000)*1.0E6'
     boundary = front
   [../]
+
   [./solid_back]
     type = PresetBC
     variable = sdisp_x 
@@ -362,7 +422,7 @@
   [./gravity_z]
     type = Gravity
     variable = sdisp_z
-    value = 9.8
+    value = -9.8
     use_displaced_mesh = false
   [../]
   [./poro_x]
@@ -392,12 +452,17 @@
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
+  [./ts]
+    # large so that there is no plastic deformation
+    type = TensorMechanicsHardeningConstant
+    value = 1E16
+  [../]
 []
 
 [Modules]
   [./FluidProperties]
-    [./water97property]
-      type = Water97FluidProperties
+    [./simple_fluid]
+      type = Water97FluidProperties 
     [../]
   [../]
 []
@@ -428,7 +493,7 @@
   [../]
   [./simple_fluid]
     type = PorousFlowSingleComponentFluid
-    fp = water97property 
+    fp = simple_fluid
     phase = 0
     at_nodes = true
   [../]
@@ -438,22 +503,22 @@
   [../]
   [./simple_fluid_qp]
     type = PorousFlowSingleComponentFluid
-    fp = water97property 
+    fp = simple_fluid
     phase = 0
   [../]
   [./thermal_conductivity_matrix]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '3.0 0 0 0 3.0 0 0 0 3.0'
+    dry_thermal_conductivity = '2.58 0 0 0 2.58 0 0 0 2.58'
     block = 'matrix1 matrix2'
   [../]
   [./thermal_conductivity_fracture]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '1.0 0 0 0 1.0 0 0 0 1.0'
+    dry_thermal_conductivity = '0.68 0 0 0 0.68 0 0 0 0.68'
     block = 'fracture'
   [../]
   [./poro_fracture]
     type = PorousFlowPorosityConst
-    porosity = 0.1   # = a * phif
+    porosity = 0.05   # = a * phif
     block = 'fracture'
   [../]
   [./poro_matrix]
@@ -464,7 +529,7 @@
   [./poro_fracture_nodal]
     type = PorousFlowPorosityConst
     at_nodes = true
-    porosity = 0.1   # = a * phif
+    porosity = 0.05  # = a * phif
     block = 'fracture'
   [../]
   [./poro_matrix_nodal]
@@ -509,38 +574,46 @@
     type = ComputeIsotropicElasticityTensor
     youngs_modulus = 4.84E10
     poissons_ratio = 0.15
-   # type = ComputeElasticityTensor
-   # C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
-   # fill_method = symmetric_isotropic
   [../]
   [./thermal_expansion_strain]
     type = ComputeThermalExpansionEigenstrain
     stress_free_temperature = 293
     thermal_expansion_coeff = 1.0E-5 
     temperature = T
-    eigenstrain_name = eigenstrain
+    eigenstrain_name = thermal_strain 
   [../]
+
+  [./strain_from_initial_stress]
+    type = ComputeEigenstrainFromInitialStress
+    initial_stress = 'kxx_fcn 0 0
+                      0 kyy_fcn 0
+                      0 0 weight_fcn'
+    eigenstrain_name = ini_stress
+  [../]
+
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
-    eigenstrain_names = eigenstrain
+    eigenstrain_names = 'ini_stress thermal_strain'
   [../]
+
   [./density]
     type = GenericConstantMaterial
     prop_names = density
     prop_values = 2.683E3 # (1-0.01)*2700 + 0.01*1.0E3
   [../]
+
   [./eff_fluid_pressure]
     type = PorousFlowEffectiveFluidPressure
     at_nodes = true
   [../]
+
   [./eff_fluid_pressure_qp]
     type = PorousFlowEffectiveFluidPressure
   [../]
+
   [./stress]
     type = ComputeLinearElasticStress
-   # type = ComputeMultiPlasticityStress
-   # ep_plastic_tolerance = 1E-5
   [../]
 []
 
@@ -592,17 +665,6 @@
   nl_abs_tol = 1e-6
 []
 
-#[VectorPostprocessors]
-#  [./x_pp]
-#    type = LineValueSampler
-#    start_point = '0 0 0'
-#    end_point = '1000 0 0'
-#    sort_by = x
-#    num_points = 50
-#    variable = T
-#    outputs = csv
-#  [../]
-#[]
 
 [Outputs]
  # [./csv]
@@ -611,7 +673,7 @@
  # [../]
   [./exduos]
     type = Exodus
-    file_base =  steady_out_fine
+    file_base = steady_out_fine
     execute_on = 'timestep_end'
   [../]
 []

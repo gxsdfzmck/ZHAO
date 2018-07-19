@@ -8,11 +8,6 @@
 
 [Mesh]
   file = 'steady_out_fine.e' #'steady_out_fine.e'
-  block_id = '1 2 3'
-  block_name = 'fracture matrix1 matrix2'
- #
- # boundary_id = '1 2 1111 2222 3333 4444 5555 6666'
- # boundary_name = 'inject produce top bottom left right front back'
 []
 
 [GlobalParams]
@@ -24,16 +19,23 @@
 
 [Variables]
   [./pp]
-    scaling = 1E9
+    scaling = 1E-14
   [../]
+
   [./T]
-    scaling = 1E3
+    scaling = 1E-14
   [../]
+
   [./sdisp_x]
+    scaling = 1E-15
   [../]
+
   [./sdisp_y]
+    scaling = 1E-15
   [../]
+
   [./sdisp_z]
+    scaling = 1E-15
   [../]
 []
 
@@ -43,20 +45,24 @@
     order = CONSTANT
     block = 'fracture'
   [../]
+
   [./velocity_y]
     family = MONOMIAL
     order = CONSTANT
     block = 'fracture'
   [../]
+
   [./velocity_z]
     family = MONOMIAL
     order = CONSTANT
     block = 'fracture'
   [../]
+
   [./stress_xx]
     order = CONSTANT
     family = MONOMIAL
   [../]
+
   [./stress_xy]
     order = CONSTANT
     family = MONOMIAL
@@ -177,54 +183,15 @@
 
 [ICs]
   [./pp_matrix]
-   type = FunctionIC 
-   function = initial_pp
-   variable = pp
+    type = FunctionIC 
+    function = initial_pp
+    variable = pp
   [../]
+
   [./T_matrix]
    type = FunctionIC 
    function = initial_T
    variable = T
-  [../]
- # [./sdisp_x]
- #   type = FunctionIC
- #   function = initial_disp_x
- #   variable = sdisp_x
- # [../]
- # [./sdisp_y]
- #   type = FunctionIC
- #   function = initial_disp_y
- #   variable = sdisp_y
- # [../]
- # [./sdisp_z]
- #   type = FunctionIC
- #   function = initial_disp_z
- #   variable = sdisp_z
- # [../]
-  [./stress_xx]
-    type = FunctionIC
-    function = initial_stress_xx
-    variable = stress_xx
-  [../]
-  [./stress_xy]
-    type = FunctionIC
-    function = initial_stress_xy
-    variable = stress_xy
-  [../]
-  [./stress_xz]
-    type = FunctionIC
-    function = initial_stress_xz
-    variable = stress_xz
-  [../]
-  [./stress_yy]
-    type = FunctionIC
-    function = initial_stress_yy
-    variable = stress_yy
-  [../]
-  [./stress_zz]
-    type = FunctionIC
-    function = initial_stress_zz
-    variable = stress_zz
   [../]
 []
 
@@ -234,97 +201,106 @@
     from_variable = pp
     solution = steady_solution_pp
   [../]
+
   [./initial_T]
     type = SolutionFunction
     from_variable = T
     solution = steady_solution_T
   [../]
- # [./initial_disp_x]
- #   type = SolutionFunction
- #   from_variable = sdisp_x
- #   solution = steady_solution_disp_x
- # [../]
- # [./initial_disp_y]
- #   type = SolutionFunction
- #   from_variable = sdisp_y
- #   solution = steady_solution_disp_y
- # [../]
- # [./initial_disp_z]
- #   type = SolutionFunction
- #   from_variable = sdisp_z
- #   solution = steady_solution_disp_z
- # [../]
+
   [./initial_stress_xx]
     type = SolutionFunction
     from_variable = stress_xx
     solution = steady_solution_stress_xx
   [../]
+
   [./initial_stress_xy]
     type = SolutionFunction
     from_variable = stress_xy
     solution = steady_solution_stress_xy
   [../]
-  [./initial_stress_xz]
-    type = SolutionFunction
-    from_variable = stress_xz
-    solution = steady_solution_stress_xz
-  [../]
+
   [./initial_stress_yy]
     type = SolutionFunction
     from_variable = stress_yy
     solution = steady_solution_stress_yy
   [../]
+
   [./initial_stress_zz]
     type = SolutionFunction
     from_variable = stress_zz
     solution = steady_solution_stress_zz
   [../]
-  [./top_force_pressure]
-    type = ParsedFunction
-    value = '1E8'
-  [../]
-  [./front_force_pressure]
-    type = ParsedFunction
-    value = '(80+(5000-z)*(180-80)/5000)*1.0E6'
-  [../]
-  [./right_force_pressure]
-    type = ParsedFunction
-    value = '(120+(5000-z)*(270-120)/5000)*1.0E6'
-  [../]
 []
 
 [BCs]
-  [./pBC]
+  [./ptop]
     type = FunctionPresetBC 
     variable = pp
-    boundary =  'top bottom left right front back'
+    boundary = 'top bottom'
     function = initial_pp
   [../]
+
+  [./pleft]
+    type = NeumannBC 
+    variable = pp
+    boundary = left
+    value = 0
+  [../]
+
+  [./pright]
+    type = NeumannBC 
+    variable = pp
+    boundary = right 
+    value = 0
+  [../]
+
+  [./pfront]
+    type = NeumannBC 
+    variable = pp
+    boundary = front
+    value = 0
+  [../]
+
+  [./pback]
+    type = NeumannBC 
+    variable = pp
+    boundary = back
+    value = 0
+  [../]
+
   [./pInject]
     type = PresetBC
     variable = pp
     boundary = inject
     value = 27.3E6
   [../]
+
   [./pProduce]
     type = PresetBC
     variable = pp
     boundary = produce
     value = 9.8E6
   [../]
+
+  ##### Energy BC #######
+  [./T_BC]
+    type = HeatConductionBC 
+    variable = T
+    boundary = 'top bottom right left front back'
+  [../]
+
   [./Tinject]
     type = PresetBC
-    variable = T
+    variable = T 
     boundary = inject
     value = 303    
   [../]
-  ##### Energy BC #######
-  [./T_BC]
-    type = FunctionPresetBC
-    variable = T
-    boundary = 'top bottom left right front back'
-    function = initial_T
-  [../]
+ # [./Ttop]
+ #   type = NeumannBC
+ #   variable = T
+ #   boundary = top
+ # [../]
  # [./Tbottom]
  #   type = NeumannBC
  #   variable = T
@@ -359,7 +335,7 @@
     type = Pressure
     variable = sdisp_z
     component = 2
-    function = top_force_pressure  # 100MPa
+    factor = 1.0E8 
     boundary = top
   [../]
 ########## solid mechanics BCS ###########
@@ -369,28 +345,32 @@
     value = 0
     boundary = bottom
   [../]
+
   [./solid_left]
     type = PresetBC
     variable = sdisp_y
     value = 0
     boundary = left
   [../]
+
   [./solid_right]
     type = Pressure
     variable = sdisp_y
     component = 1
-    function = right_force_pressure
+    function = '(120-z*(270-120)/5000)*1.0E6' 
     use_displaced_mesh = false
     boundary = right
   [../]
+
   [./solid_front]
     type = Pressure
     variable = sdisp_x
     component = 0
     use_displaced_mesh = false
-    function = front_force_pressure
+    function = '(80-z*(180-80)/5000)*1.0E6'
     boundary = front
   [../]
+
   [./solid_back]
     type = PresetBC
     variable = sdisp_x
@@ -410,12 +390,12 @@
     fluid_component = 0
     variable = pp
   [../]
- ############ Energy Kernels for matrix ##########
-  [./EnergyTimeDeriv_matrix]
+ ############ Energy Kernels ##########
+  [./EnergyTimeDeriv]
     type = PorousFlowEnergyTimeDerivative
     variable = T
   [../]
-  [./EnergyAdvection_matrix]
+  [./EnergyAdvection]
     type = PorousFlowHeatAdvection
     fluid_component = 0
     variable = T
@@ -478,80 +458,51 @@
 [UserObjects]
   [./steady_solution_pp]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'pp' 
+    timestep = LATEST 
+    system_variables = pp
     mesh = steady_out_fine.e
   [../]
+
   [./steady_solution_T]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'T' 
+    timestep = LATEST 
+    system_variables = T
     mesh = steady_out_fine.e
   [../]
- # [./steady_solution_disp_x]
- #   type = SolutionUserObject
- #   timestep = LATEST
- #   system_variables = 'sdisp_x'
- #   mesh = steady_out_fine.e
- # [../]
- # [./steady_solution_disp_y]
- #   type = SolutionUserObject
- #   timestep = LATEST
- #   system_variables = 'sdisp_y'
- #   mesh = steady_out_fine.e
- # [../]
- # [./steady_solution_disp_z]
- #   type = SolutionUserObject
- #   timestep = LATEST
- #   system_variables = 'sdisp_z'
- #   mesh = steady_out_fine.e
- # [../]
+  
   [./steady_solution_stress_xx]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_xx'
+    timestep = LATEST 
+    system_variables = stress_xx
     mesh = steady_out_fine.e
   [../]
+
   [./steady_solution_stress_xy]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_xy'
+    timestep = LATEST 
+    system_variables = stress_xy
     mesh = steady_out_fine.e
   [../]
-  [./steady_solution_stress_xz]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_xz'
-    mesh = steady_out_fine.e
-  [../]
+
   [./steady_solution_stress_yy]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_yy'
+    timestep = LATEST 
+    system_variables = stress_yy
     mesh = steady_out_fine.e
   [../]
-  [./steady_solution_stress_yz]
-    type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_yz'
-    mesh = steady_out_fine.e
-  [../]
+ 
   [./steady_solution_stress_zz]
     type = SolutionUserObject
-    timestep = LATEST
-    system_variables = 'stress_zz'
+    timestep = LATEST 
+    system_variables = stress_zz
     mesh = steady_out_fine.e
   [../]
+
   [./dictator]
     type = PorousFlowDictator
     porous_flow_vars = 'pp T sdisp_x sdisp_y sdisp_z'
     number_fluid_phases = 1
     number_fluid_components = 1
-  [../]
-  [./pc]
-    type = PorousFlowCapillaryPressureVG
-    alpha = 1E-8
-    m = 0.5
   [../]
 []
 
@@ -571,131 +522,150 @@
 []
 
 [Materials]
-  [./temperature_matrix]
+  [./temperature]
     type = PorousFlowTemperature
     temperature = T
   [../]
-  [./temperature_nodal_matrix]
+
+  [./temperature_nodal]
     type = PorousFlowTemperature
     at_nodes = true
     temperature = T
   [../]
+
   [./rock_heat]
     type = PorousFlowMatrixInternalEnergy
     specific_heat_capacity = 1.08E3
     density = 2.7E3
- 1
   [../]
+
   [./ppss]
     type = PorousFlow1PhaseFullySaturated
     at_nodes = true
     porepressure = pp
-    capollary_pressure = pc
   [../]
+
   [./ppss_qp]
     type = PorousFlow1PhaseFullySaturated
     porepressure = pp
-    capollary_pressure = pc
   [../]
+
   [./water97property]
     type = PorousFlowSingleComponentFluid
     fp = water97property
     phase = 0
     at_nodes = true
   [../]
+
   [./massfrac]
     type = PorousFlowMassFraction
     at_nodes = true
   [../]
+
   [./simple_fluid_qp]
     type = PorousFlowSingleComponentFluid
     fp = water97property 
     phase = 0
   [../]
+
   [./thermal_conductivity_matrix]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '3.0 0 0 0 3.0 0 0 0 3.0'
+    dry_thermal_conductivity = '2.58 0 0 0 2.58 0 0 0 2.58'
     block = 'matrix1 matrix2'
   [../]
+
   [./thermal_conductivity_fracture]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '1.0 0 0 0 1.0 0 0 0 1.0'
+    dry_thermal_conductivity = '0.68 0 0 0 0.68 0 0 0 0.68'
     block = 'fracture'
   [../]
+
   [./poro_fracture]
-    type = PorousFlowPorosity
-    PorousFlowDictator = dictator
-    thermal = true
-    ensure_positive = true
-    fluid = true
-    mechanical = true
-    biot_coefficient = 1.0
-    porosity_zero = 0.1
-    solid_bulk = 2.30E10
-    thermal_expansion_coeff = 1.05E-5
+    type = PorousFlowPorosityConst
+    porosity = 0.05  # = a * phif
+   # type = PorousFlowPorosity
+   # PorousFlowDictator = dictator
+   # thermal = true
+   # fluid = true
+   # mechanical = true
+   # biot_coefficient = 1.0
+   # porosity_zero = 0.1
+   # solid_bulk = 2.30E10
+   # thermal_expansion_coeff = 1.05E-5
    # reference_porepressure = 'pp'
    # reference_temperature = 'T'
     block = 'fracture'
   [../]
+
   [./poro_matrix]
-    type = PorousFlowPorosity
-    PorousFlowDictator = dictator
-    ensure_positive = true
-    thermal = true
-    fluid = true
-    mechanical = true
-    porosity_zero = 0.01
+    type = PorousFlowPorosityConst
+    porosity = 0.01
+   # type = PorousFlowPorosity
+   # PorousFlowDictator = dictator
+   # thermal = true
+   # fluid = true
+   # mechanical = true
+   # porosity_zero = 0.01
    # reference_porepressure = 'pp'
-   # reference_temperature = 'T'
-    solid_bulk = 2.30E10 
-    biot_coefficient = 1
-    thermal_expansion_coeff = 1.0E-5
+   # reference_temperature = 'T_m'
+   # solid_bulk = 2.30E10 
+   # biot_coefficient = 1
+   # thermal_expansion_coeff = 1.0E-5
     block = 'matrix1 matrix2'
   [../]
+
   [./poro_fracture_nodal]
+    type = PorousFlowPorosityConst
     at_nodes = true
-    type = PorousFlowPorosity
-    PorousFlowDictator = dictator
-    ensure_positive = true
-    thermal = true
-    fluid = true
-    mechanical = true
-    biot_coefficient = 1.0
-    porosity_zero = 0.1
-    solid_bulk = 2.30E10
-    thermal_expansion_coeff = 1.05E-5
-   # reference_porepressure = 'pp'
-   # reference_temperature = 'T'
+    porosity = 0.05  # = a * phif
     block = 'fracture'
-  [../]
-  [./poro_matrix_nodal]
-    at_nodes = true
-    type = PorousFlowPorosity
-    PorousFlowDictator = dictator
-    ensure_positive = true
-    thermal = true
-    fluid = true
-    mechanical = true
-    porosity_zero = 0.01
+   # type = PorousFlowPorosity
+   # PorousFlowDictator = dictator
+   # thermal = true
+   # fluid = true
+   # mechanical = true
+   # biot_coefficient = 1.0
+   # porosity_zero = 0.1
+   # solid_bulk = 2.30E10
+   # thermal_expansion_coeff = 1.05E-5
    # reference_porepressure = 'pp'
-   # reference_temperature = 'T'
-    solid_bulk = 2.30E10 
-    biot_coefficient = 1
-    thermal_expansion_coeff = 1.0E-5
-    block = 'matrix1 matrix2'
+   # reference_temperature = 'T_m'
+   # block = 'fracture'
   [../]
+
+  [./poro_matrix_nodal]
+    type = PorousFlowPorosityConst
+    at_nodes = true
+    porosity = 0.01
+    block = 'matrix1 matrix2'
+   # type = PorousFlowPorosity
+   # PorousFlowDictator = dictator
+   # thermal = true
+   # fluid = true
+   # mechanical = true
+   # porosity_zero = 0.01
+   # reference_porepressure = 'pp'
+   # reference_temperature = 'T_m'
+   # solid_bulk = 2.30E10 
+   # biot_coefficient = 1
+   # thermal_expansion_coeff = 1.0E-5
+   # block = 'matrix1 matrix2'
+  [../]
+
   [./diff1]
     type = PorousFlowDiffusivityConst
     diffusion_coeff = '1e-9'
     tortuosity = 1.0
     block = 'fracture'
   [../]
+
   [./diff2]
     type = PorousFlowDiffusivityConst
     diffusion_coeff = '1e-9'
     tortuosity = 0.1
     block = 'matrix1 matrix2'
   [../]
+
   [./permeability_fracture]
    # type = PorousFlowPermeabilityConst
    # permeability = '1.05e-8 0 0 0 1.05e-8 0 0 0 1.05e-8'   # 1.8e-11 = a * kf
@@ -708,6 +678,7 @@
     n = 3
     block = 'fracture'
   [../]
+
   [./permeability_matrix]
    # type = PorousFlowPermeabilityConst
    # permeability = '1.096e-16 0 0 0 1.096e-16 0 0 0 1.096e-16'
@@ -720,10 +691,12 @@
     n = 3
     block = 'matrix1 matrix2'
   [../]
+
   [./relp]
     type = PorousFlowRelativePermeabilityConst
     phase = 0
   [../]
+
   [./relp_nodal]
     type = PorousFlowRelativePermeabilityConst
     at_nodes = true
@@ -734,42 +707,59 @@
     type = ComputeIsotropicElasticityTensor
     youngs_modulus = 4.84E10
     poissons_ratio = 0.15
-   # type = ComputeElasticityTensor
-   # C_ijkl = '3.478E10 2.10E9' # young = 48.4GPa, poisson = 0.15
-   # fill_method = symmetric_isotropic
   [../]
-  [./thermal_expansion_strain]
+
+  [./thermal_expansion_strain_fracture]
     type = ComputeThermalExpansionEigenstrain
     stress_free_temperature = 293
     thermal_expansion_coeff = 1.0E-5
     temperature = T
-    eigenstrain_name = eigenstrain
+    eigenstrain_name = thermal_stress
   [../]
+
+  [./strain_from_initial_stress]  
+    type = ComputeEigenstrainFromInitialStress
+    initial_stress = 'initial_stress_xx initial_stress_xx 0
+                      initial_stress_xy initial_stress_yy 0
+                      0 0 initial_stress_zz'
+    eigenstrain_name = ini_stress
+  [../]
+
   [./strain]
     type = ComputeSmallStrain
     displacements = 'sdisp_x sdisp_y sdisp_z'
-    eigenstrain_names = eigenstrain
-   # type = ComputeIncrementalSmallStrain
+    eigenstrain_names = 'ini_stress thermal_stress'
   [../]
+
   [./density]
     type = GenericConstantMaterial
     prop_names = density
     prop_values = 2.683E3 # (1-0.01)*2700 + 0.01*1.0E3
   [../]
+
   [./eff_fluid_pressure]
     type = PorousFlowEffectiveFluidPressure
     at_nodes = true
   [../]
+
   [./eff_fluid_pressure_qp]
     type = PorousFlowEffectiveFluidPressure
   [../]
+
   [./stress]
     type = ComputeLinearElasticStress
    # type = ComputeMultiPlasticityStress
    # ep_plastic_tolerance = 1E-5
   [../]
+
   [./vol_strain]
     type = PorousFlowVolumetricStrain
+  [../]
+
+  [./thermal_conductivity_real]
+    type = HeatConductionMaterial
+    specific_heat = 1.08E3
+    thermal_conductivity = 2.58
   [../]
 []
 
@@ -806,30 +796,16 @@
     type = SolutionTimeAdaptiveDT
     dt = 864
   [../]
-    end_time = 4.32E7 # 500 day 
-    l_tol = 1e-7
-    l_max_its = 500
-    nl_rel_tol = 1e-10
-    nl_abs_tol = 1e-7
+  end_time = 4.32E3 # 500 day 
+  num_steps = 500
+  l_tol = 1e-7
+  l_max_its = 500
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-4
 []
 
-#[VectorPostprocessors]
-#  [./x_pp]
-#    type = LineValueSampler
-#    start_point = '0 0 0'
-#    end_point = '1000 0 0'
-#    sort_by = x
-#    num_points = 50
-#    variable = pp
-#    outputs = csv
-#  [../]
-#[]
 
 [Outputs]
- # [./csv]
- #   type = CSV
- #   execute_on = 'final'
- # [../]
   [./exduos]
     type = Exodus
     file_base = transient_out_fine
